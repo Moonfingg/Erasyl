@@ -1,0 +1,915 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Noto Serif", Georgia, serif;
+  --font-sans: "Noto Sans", system-ui, sans-serif;
+  --color-gold: #e3b04b;
+  --color-ink: #090e1d;
+  --color-cream: #f6ecd4;
+  --color-kok: #2fb5b0;
+  --color-qyzyl: #c1432f;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #090e1d;
+  font-family: var(--font-sans);
+  color: #f6ecd4;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Слайд ауысуы: жұмсақ шеті бар алтын толқын */
+@property --r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+.enter {
+  -webkit-mask-image: radial-gradient(circle at var(--ox, 50%) var(--oy, 50%), #000 calc(var(--r) - 90px), transparent var(--r));
+  mask-image: radial-gradient(circle at var(--ox, 50%) var(--oy, 50%), #000 calc(var(--r) - 90px), transparent var(--r));
+  animation: reveal 1.2s cubic-bezier(0.65, 0, 0.2, 1) both;
+}
+.enter > * {
+  animation: settle 1.2s cubic-bezier(0.22, 0.7, 0.2, 1) both;
+}
+.exit {
+  animation: exitAnim 1.1s cubic-bezier(0.4, 0, 0.3, 1) both;
+  pointer-events: none;
+}
+.reveal-ring {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--ox, 50%) var(--oy, 50%),
+    transparent calc(var(--r) - 190px),
+    rgba(255, 214, 120, 0.16) calc(var(--r) - 48px),
+    rgba(255, 244, 210, 0.95) calc(var(--r) - 42px),
+    transparent calc(var(--r) - 36px)
+  );
+  animation: reveal 1.2s cubic-bezier(0.65, 0, 0.2, 1) both;
+}
+@keyframes reveal {
+  from {
+    --r: 0px;
+  }
+  to {
+    --r: 150vmax;
+  }
+}
+@keyframes settle {
+  from {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes exitAnim {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.975);
+    filter: brightness(0.5);
+  }
+}
+
+/* Тереңдік: тінтуір қозғалғанда қабаттар әртүрлі жылжиды */
+.par-1 {
+  translate: calc(var(--mx, 0) * -6px) calc(var(--my, 0) * -4px);
+}
+.par-2 {
+  translate: calc(var(--mx, 0) * -12px) calc(var(--my, 0) * -5px);
+}
+.par-3 {
+  translate: calc(var(--mx, 0) * 9px) calc(var(--my, 0) * 6px);
+}
+
+/* Карточкалар: 3D еңкею және жарқыл */
+.tilt {
+  position: relative;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease, border-color 0.5s ease;
+  will-change: transform;
+}
+.tilt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 226, 160, 0.2), transparent 62%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.tilt:hover {
+  box-shadow: 0 24px 50px -22px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(227, 176, 75, 0.5);
+}
+.tilt:hover::after {
+  opacity: 1;
+}
+
+/* Бейнелеу қабаттары */
+.vignette {
+  background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.4) 100%);
+}
+.grain {
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Құйрықты жұлдыз */
+.shoot {
+  position: absolute;
+  width: 150px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #fff7da);
+  opacity: 0;
+  animation: shoot 8s ease-in infinite;
+}
+@keyframes shoot {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(28deg);
+  }
+  2% {
+    opacity: 1;
+  }
+  9% {
+    opacity: 0;
+    transform: translate(460px, 250px) rotate(28deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(460px, 250px) rotate(28deg);
+  }
+}
+
+/* Жарқыраған батырма */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 240, 200, 0.4) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: shimmer 3.2s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%,
+  55% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+.label-in {
+  animation: labelIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes labelIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    letter-spacing: 0.5em;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Шамды басқанда */
+.lantern-hit {
+  animation: lanternHit 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes lanternHit {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  25% {
+    transform: scale(1.12);
+    filter: brightness(1.4);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Мәтін шығуы */
+.rise {
+  opacity: 0;
+  animation: rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+.letter {
+  display: inline-block;
+  opacity: 0;
+  animation: letter 1.1s cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes letter {
+  from {
+    opacity: 0;
+    transform: translateY(70px) rotateX(70deg) scale(0.8);
+    filter: blur(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+.pop {
+  opacity: 0;
+  animation: pop 0.9s cubic-bezier(0.3, 1.4, 0.4, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.slide-in-left {
+  opacity: 0;
+  animation: slideLeft 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-70px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.slide-in-right {
+  opacity: 0;
+  animation: slideRight 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(70px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Жалпы қозғалыстар */
+.twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+.float-y {
+  animation: floatY 6s ease-in-out infinite;
+}
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+.spin-slow {
+  animation: spin 60s linear infinite;
+}
+.spin-rev {
+  animation: spin 90s linear infinite reverse;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 2s ease forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.mount-drift-1 {
+  animation: mdrift 14s ease-in-out infinite alternate;
+}
+.mount-drift-2 {
+  animation: mdrift 20s ease-in-out infinite alternate-reverse;
+}
+@keyframes mdrift {
+  from {
+    transform: translateX(-1.5%);
+  }
+  to {
+    transform: translateX(1.5%);
+  }
+}
+.rise-sun {
+  animation: riseSun 3.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes riseSun {
+  from {
+    transform: translateY(60%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+/* Жел сызықтары */
+.wind-line {
+  position: absolute;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(246, 236, 212, 0.55), transparent);
+  animation: windMove linear infinite;
+  opacity: 0;
+}
+@keyframes windMove {
+  0% {
+    transform: translateX(-40vw);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(140vw);
+    opacity: 0;
+  }
+}
+
+/* Шауып бара жатқан атты */
+.ride {
+  animation: ride 8.5s linear infinite;
+}
+@keyframes ride {
+  from {
+    transform: translateX(-35vw);
+  }
+  to {
+    transform: translateX(115vw);
+  }
+}
+.horse-bob {
+  animation: horseBob 0.46s ease-in-out infinite;
+}
+@keyframes horseBob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(1.5deg);
+  }
+}
+.leg-a {
+  animation: legA 0.46s ease-in-out infinite alternate;
+}
+.leg-b {
+  animation: legB 0.46s ease-in-out infinite alternate;
+}
+@keyframes legA {
+  from {
+    transform: rotate(-38deg);
+  }
+  to {
+    transform: rotate(38deg);
+  }
+}
+@keyframes legB {
+  from {
+    transform: rotate(38deg);
+  }
+  to {
+    transform: rotate(-38deg);
+  }
+}
+.dust {
+  animation: dust 1.4s ease-out infinite;
+  opacity: 0;
+}
+@keyframes dust {
+  0% {
+    opacity: 0.6;
+    transform: translate(0, 0) scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-90px, -26px) scale(2.2);
+  }
+}
+
+/* Домбыра */
+.string-vib {
+  animation: stringVib 0.9s ease-out;
+  transform-box: fill-box;
+}
+@keyframes stringVib {
+  0% {
+    transform: translateY(0);
+  }
+  10% {
+    transform: translateY(-5px);
+  }
+  20% {
+    transform: translateY(5px);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+  40% {
+    transform: translateY(3.5px);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+  60% {
+    transform: translateY(2px);
+  }
+  75% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ring 1.4s ease-out forwards;
+}
+@keyframes ring {
+  from {
+    opacity: 0.9;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 0;
+    transform: scale(9);
+  }
+}
+
+/* Қылыштар */
+.sword-l {
+  transform-origin: 110px 330px;
+  animation: swingL 1.8s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+}
+.sword-r {
+  transform-origin: 290px 330px;
+  animation: swingR 1.8s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+}
+@keyframes swingL {
+  0% {
+    transform: rotate(82deg);
+  }
+  50% {
+    transform: rotate(38deg);
+  }
+  56% {
+    transform: rotate(41deg);
+  }
+  64% {
+    transform: rotate(38deg);
+  }
+  100% {
+    transform: rotate(82deg);
+  }
+}
+@keyframes swingR {
+  0% {
+    transform: rotate(-82deg);
+  }
+  50% {
+    transform: rotate(-38deg);
+  }
+  56% {
+    transform: rotate(-41deg);
+  }
+  64% {
+    transform: rotate(-38deg);
+  }
+  100% {
+    transform: rotate(-82deg);
+  }
+}
+.clash-shake {
+  animation: clashShake 1.8s linear infinite;
+}
+@keyframes clashShake {
+  0%,
+  49% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(5px, -4px);
+  }
+  52% {
+    transform: translate(-5px, 3px);
+  }
+  54% {
+    transform: translate(3px, 2px);
+  }
+  56%,
+  100% {
+    transform: translate(0, 0);
+  }
+}
+.spark {
+  transform-box: fill-box;
+  opacity: 0;
+  animation: spark 1.8s ease-out infinite;
+}
+@keyframes spark {
+  0%,
+  49% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.4);
+  }
+  72% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0.3);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.flash {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: flash 1.8s ease-out infinite;
+}
+@keyframes flash {
+  0%,
+  49% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  51% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  68% {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.ember {
+  position: absolute;
+  bottom: -10px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #ffd27a, #e8602c 60%, transparent 70%);
+  animation: ember linear infinite;
+  opacity: 0;
+}
+@keyframes ember {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--sx, 30px), -105vh) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* Ақтабан шұбырынды */
+.ash {
+  position: absolute;
+  top: -12px;
+  border-radius: 9999px;
+  background: rgba(230, 210, 180, 0.7);
+  animation: ash linear infinite;
+}
+@keyframes ash {
+  from {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  to {
+    transform: translate(-160px, 108vh);
+    opacity: 0;
+  }
+}
+.fog {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  background: rgba(205, 170, 130, 0.28);
+  animation: fog 18s ease-in-out infinite alternate;
+}
+@keyframes fog {
+  from {
+    transform: translateX(-12vw);
+  }
+  to {
+    transform: translateX(14vw);
+  }
+}
+.caravan {
+  animation: caravan 46s linear infinite;
+}
+@keyframes caravan {
+  from {
+    transform: translateX(-70%);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}
+.walker {
+  animation: walker 0.9s ease-in-out infinite alternate;
+}
+@keyframes walker {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
+.flicker {
+  animation: flicker 4s steps(1) infinite;
+}
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.4;
+  }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.6;
+  }
+  97% {
+    opacity: 1;
+  }
+}
+
+/* Шамдар */
+.lantern {
+  opacity: 0;
+  animation: lanternIn 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes lanternIn {
+  from {
+    opacity: 0;
+    transform: translateY(160px) scale(0.5);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+.lantern-sway {
+  animation: sway 5s ease-in-out infinite;
+}
+@keyframes sway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-16px) rotate(2deg);
+  }
+}
+.firefly {
+  position: absolute;
+  border-radius: 9999px;
+  background: #ffe9a8;
+  box-shadow: 0 0 12px 3px rgba(255, 220, 130, 0.8);
+  animation: firefly ease-in-out infinite alternate;
+}
+@keyframes firefly {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--fx, 40px), var(--fy, -60px));
+    opacity: 0.3;
+  }
+}
+
+/* Егін мен су */
+.grow {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: scaleY(0);
+  animation: grow 1.3s cubic-bezier(0.3, 1.5, 0.4, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes grow {
+  to {
+    transform: scaleY(1);
+  }
+}
+.flow {
+  animation: flow 1.2s linear infinite;
+}
+@keyframes flow {
+  to {
+    stroke-dashoffset: -44;
+  }
+}
+.bird-fly {
+  animation: birdFly 14s linear infinite;
+}
+@keyframes birdFly {
+  from {
+    transform: translate(-10vw, 0);
+  }
+  50% {
+    transform: translate(50vw, -30px);
+  }
+  to {
+    transform: translate(110vw, 10px);
+  }
+}
+.flap {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: flap 0.5s ease-in-out infinite alternate;
+}
+@keyframes flap {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(-0.6);
+  }
+}
+
+/* Қорытынды */
+.shine-text {
+  background: linear-gradient(100deg, #b9812a 10%, #ffe39a 45%, #e3b04b 55%, #b9812a 90%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 5s linear infinite;
+}
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+.hint-pulse {
+  animation: hintPulse 2.4s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(227, 176, 75, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(227, 176, 75, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ride,
+  .caravan {
+    animation-duration: 40s;
+  }
+  .twinkle,
+  .float-y,
+  .spin-slow,
+  .spin-rev,
+  .mount-drift-1,
+  .mount-drift-2,
+  .fog,
+  .flicker,
+  .shimmer::after,
+  .horse-bob,
+  .lantern-sway {
+    animation: none;
+  }
+  .wind-line,
+  .ember,
+  .ash,
+  .firefly,
+  .shoot {
+    display: none;
+  }
+  .enter,
+  .enter > *,
+  .reveal-ring {
+    animation-duration: 0.01s;
+  }
+  .tilt {
+    transform: none;
+  }
+  .par-1,
+  .par-2,
+  .par-3 {
+    translate: none;
+  }
+}
